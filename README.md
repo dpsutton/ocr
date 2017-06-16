@@ -1,14 +1,30 @@
 # ocr
 
-A Clojure library designed to ... well, that part is up to you.
+This is a solution to the bank account "OCR" [problem](https://github.com/codingdojo-org/codingdojo.org/blob/master/content/kata/BankOCR.md):
 
 ## Usage
 
-FIXME
+There is a main entry point in `ocr.core`: `parse-file`. This should do all that is required for the problem itself. This requires a file formatted with the ascii spanning three lines and a blank line separating it from the next formwhich we can generate as well.
+
+The file should look like the following:
+
+``` text
+    _  _  _  _  _  _     _
+|_|  ||_   |  ||_| _||_||_|
+  |  ||_|  |  | _||_   | _|
+
+ _  _  _        _  _  _
+ _| _||_ |_||_||_| _|  ||_|
+ _| _||_|  |  | _| _|  |  |
+
+ _     _     _
+|_||_||_ |_| _||_|  ||_|  |
+ _|  | _|  ||_   |  |  |  |
+```
+
+To generate a file, use the `ocr.files` namespace. The `create-file` function just needs a filename and a count for the number of ascii account numbers to create. This will place this file under the resources directory.
 
 ## License
-
-Copyright © 2017 FIXME
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
