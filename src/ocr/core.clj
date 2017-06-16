@@ -100,3 +100,17 @@
          (apply + x)
          (mod x 11)
          (= x 0))))
+
+(defn analyze-parse
+  "Given a sequence of digits and :not-recognized, analyzed whether it
+  is a valid parsed result"
+  [digits]
+  (cond
+    (not (valid-digits? digits))
+    :unrecognized-digits
+
+    (not (checksum? digits))
+    :not-valid-checksum
+
+    :else
+    :valid))
