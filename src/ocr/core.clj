@@ -1,10 +1,13 @@
 (ns ocr.core
   (:require [clojure.string :as str]))
 
+;; don't run the formatter. there's a trailing space on the top of the
+;; 9 that if lost causes partition to see a partition not long enough
+;; so our 9 doesn't get included. not the best
 (def numerals-text "
-  _     _  _     _  _  _  _  _
-  | |  | _| _||_||_ |_   ||_||_|
-  |_|  ||_  _|  | _||_|  ||_| _|
+ _     _  _     _  _  _  _  _ 
+| |  | _| _||_||_ |_   ||_||_|
+|_|  ||_  _|  | _||_|  ||_| _|
   ")
 
 (def numeral-streams (->> numerals-text
