@@ -1,6 +1,6 @@
-(ns ocr.core-test
+(ns ocr.parse-test
   (:require [clojure.test :refer :all]
-            [ocr.core :refer :all]))
+            [ocr.parse :refer :all]))
 
 (def intparse (comp digits->int parse))
 
