@@ -2,6 +2,8 @@
   (:require [clojure.test :refer :all]
             [ocr.core :refer :all]))
 
+(def intparse (comp digits->int parse))
+
 (deftest int->digits-tests
   (testing "correctly splits integer into digit stream"
     (is (= '(1 2 4)
@@ -17,19 +19,24 @@
 (deftest parse-tests
   (testing "can read the ascii"
     (is (= 123456789
-           (parse '("    _  _     _  _  _  _  _ "
-                    "  | _| _||_||_ |_   ||_||_|"
-                    "  ||_  _|  | _||_|  ||_| _|"))))))
+           (intparse '("    _  _     _  _  _  _  _ "
+                       "  | _| _||_||_ |_   ||_||_|"
+                       "  ||_  _|  | _||_|  ||_| _|")))))
+  (testing "can skip gibberish"
+    (is (= '(1 2 :not-recognized 4)
+           (parse '("    _  _    "
+                    "  | _|||||_|"
+                    "  ||_ |||  |"))))))
 
 (deftest composable-tests
   (testing "can read each others output"
     (doall (for [x (range 34000 35000)]
-             (do (is (= x (parse (get-digit-rows x))))
+             (do (is (= x (intparse (get-digit-rows x))))
                  (is (= x (-> x
                               get-digit-rows
-                              parse
+                              intparse
                               get-digit-rows
-                              parse))))))))
+                              intparse))))))))
 (deftest checksum?-tests
   (testing "recognizes correct sums"
     (is (checksum? 457508000)))

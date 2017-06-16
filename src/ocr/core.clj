@@ -42,13 +42,26 @@
   [n]
   (map #(Integer/parseInt %) (map str (seq (str n)))))
 
+(defn digits->int
+  [digits]
+  (when (not-any? #{:not-recognized} digits)
+    (first (reduce (fn [[val power] digit]
+                     [(+ val (* digit power)) (* 10 power)])
+                   [0 1]
+                   (reverse digits)))))
+
 (defn digit->str
+  "This function will always return a digit given the constraint 0 <=
+  n <= 9"
   [n]
+  (assert (<= 0 n 9) "only single digits should be looked up")
   (get-in numerals [:num->str n]))
 
 (defn str->digit
+  "Given a vector of top middle and bottom rows, return the digit
+  associated with it or else :not-recognized"
   [s]
-  (get-in numerals [:str->num s]))
+  (get-in numerals [:str->num s] :not-recognized))
 
 (def blank ["" "" ""])
 
@@ -65,15 +78,12 @@
 
 (defn parse
   "Given a seq of top, middle, and bottom rows (not grouped, just the
-  strings), parse out the corresponding numbers."
+  strings), parse out the corresponding numbers. Returns a seq of
+  digits and :not-recognized keywords"
   [streams]
   (let [rows (map chunk3 streams)
-        grouped (group-glyphs rows)
-        digits (map str->digit grouped)]
-    (first (reduce (fn [[val power] digit]
-                     [(+ val (* digit power)) (* 10 power)])
-                   [0 1]
-                   (reverse digits)))))
+        grouped (group-glyphs rows)]
+    (map str->digit grouped)))
 
 (defn checksum?
   [n]
