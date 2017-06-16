@@ -42,9 +42,13 @@
   [n]
   (map #(Integer/parseInt %) (map str (seq (str n)))))
 
+(defn valid-digits?
+  [digits]
+  (not-any? #{:not-recognized} digits))
+
 (defn digits->int
   [digits]
-  (when (not-any? #{:not-recognized} digits)
+  (when (valid-digits? digits)
     (first (reduce (fn [[val power] digit]
                      [(+ val (* digit power)) (* 10 power)])
                    [0 1]
@@ -87,6 +91,7 @@
 
 (defn checksum?
   [n]
+  (assert (valid-digits? n) "Cannot checksum when there are invalid digits")
   (let [digit-seq (int->digits n)]
     (as-> digit-seq x 
          (reverse x)
