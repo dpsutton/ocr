@@ -39,6 +39,6 @@
                               intparse))))))))
 (deftest checksum?-tests
   (testing "recognizes correct sums"
-    (is (checksum? 457508000)))
+    (is (-> 457508000 int->digits checksum?)))
   (testing "recognizes incorrect sums"
-    (is (not (checksum? 664371495)))))
+    (is (not (-> 664371495 int->digits checksum?)))))

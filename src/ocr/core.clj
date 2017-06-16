@@ -90,16 +90,15 @@
     (map str->digit grouped)))
 
 (defn checksum?
-  [n]
-  (assert (valid-digits? n) "Cannot checksum when there are invalid digits")
-  (let [digit-seq (int->digits n)]
-    (as-> digit-seq x 
-         (reverse x)
-         (map vector x (rest (range)))
-         (map (fn [xs] (apply * xs)) x)
-         (apply + x)
-         (mod x 11)
-         (= x 0))))
+  [digits]
+  (assert (valid-digits? digits) "Cannot checksum when there are invalid digits")
+  (as-> digits x
+    (reverse x)
+    (map vector x (rest (range)))
+    (map (fn [xs] (apply * xs)) x)
+    (apply + x)
+    (mod x 11)
+    (= x 0)))
 
 (defn analyze-parse
   "Given a sequence of digits and :not-recognized, analyzed whether it
