@@ -30,8 +30,8 @@
   (let [nums (group-glyphs (map chunk3 numeral-streams))
         digits (range 10)] ; this range must be same order as ascii
                                         ; glyphs above
-    {:num->str (into {} (map (fn [n d] [d n]) nums digits))
-     :str->num (into {} (map (fn [n d] [n d]) nums digits))}))
+    {:num->str (into {} (zipmap digits nums))
+     :str->num (into {} (zipmap nums digits))}))
 
 (defn int->digits
   [n]
