@@ -44,10 +44,11 @@
 (defn digits->int
   [digits]
   (when (valid-digits? digits)
-    (first (reduce (fn [[val power] digit]
-                     [(+ val (* digit power)) (* 10 power)])
-                   [0 1]
-                   (reverse digits)))))
+    (reduce (fn [val [digit power]]
+              (+ val (* digit power)))
+            0
+            (map vector (reverse digits)
+                 (iterate (partial * 10) 1)))))
 
 (defn digit->str
   "This function will always return a digit given the constraint 0 <=
