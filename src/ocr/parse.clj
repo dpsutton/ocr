@@ -31,8 +31,8 @@
   (let [nums (group-glyphs numeral-streams)
         digits (range 10)] ; this range must be same order as ascii
                                         ; glyphs above
-    {:num->str (into {} (zipmap digits nums))
-     :str->num (into {} (zipmap nums digits))}))
+    {:num->str (zipmap digits nums)
+     :str->num (zipmap nums digits)}))
 
 (defn int->digits
   [n]
