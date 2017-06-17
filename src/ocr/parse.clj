@@ -20,14 +20,15 @@
   (str/join "\n" coll))
 
 (defn group-glyphs
-  "given a vector of top middle bottom, each of which is partitioned into 3 character glyps, combine the glyphs into their logical units. aka
-  (group-glyphs [[abc def] [hij klm] [uvw xyz]]) =>
-  ([abc hij uvw] [def klm xyz])."
-  [[top middle bottom]]
-  (map vector top middle bottom))
+  "Given a stream of top, middle, bottom of strings, partition them
+  into chunks of three and clump them into the top middle and bottom
+  rows for each glyph."
+  [streams]
+  (let [[top middle bottom] (map chunk3 streams)]
+    (map vector top middle bottom)))
 
 (def numerals
-  (let [nums (group-glyphs (map chunk3 numeral-streams))
+  (let [nums (group-glyphs numeral-streams)
         digits (range 10)] ; this range must be same order as ascii
                                         ; glyphs above
     {:num->str (into {} (zipmap digits nums))
@@ -81,9 +82,8 @@
   strings), parse out the corresponding numbers. Returns a seq of
   digits and :not-recognized keywords"
   [streams]
-  (let [rows (map chunk3 streams)
-        grouped (group-glyphs rows)]
-    (map str->digit grouped)))
+  (let [glyphs (group-glyphs streams)]
+    (map str->digit glyphs)))
 
 (defn checksum?
   [digits]
