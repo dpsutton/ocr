@@ -31,12 +31,11 @@
 (deftest composable-tests
   (testing "can read each others output"
     (doall (for [x (range 34000 35000)]
-             (do (is (= x (intparse (get-digit-rows x))))
-                 (is (= x (-> x
-                              get-digit-rows
-                              intparse
-                              get-digit-rows
-                              intparse))))))))
+             (is (= x (-> x
+                          get-digit-rows
+                          intparse
+                          get-digit-rows
+                          intparse)))))))
 (deftest checksum?-tests
   (testing "recognizes correct sums"
     (is (-> 457508000 int->digits checksum?)))
