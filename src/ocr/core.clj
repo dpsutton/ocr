@@ -24,11 +24,12 @@
 
   If you need to create a file matching this, use the `ocr.files`
   namespace for file creation and reading."
-  [filename]
-  (let [pairs (->> (f/account-numbers-streams filename)
-                   (map p/parse)
-                   (map (juxt identity p/analyze-parse)))]
-    (doseq [[account reason] pairs]
-      (println (format "%s %s"
-                       (format-account account)
-                       (format-reason reason))))))
+  ([filename parse-fn]
+   (let [pairs (->> (f/account-numbers-streams filename)
+                    (map parse-fn)
+                    (map (juxt identity p/analyze-parse)))]
+     (doseq [[account reason] pairs]
+       (println (format "%s %s"
+                        (format-account account)
+                        (format-reason reason))))))
+  ([filename] (parse-file filename p/parse-completely)))
