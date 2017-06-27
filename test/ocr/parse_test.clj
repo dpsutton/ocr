@@ -57,7 +57,7 @@
   (testing "can correct tests"
     (let [core [2 3 4 5 5 7 8 3]
           bad (concat [1] core)
-          fixed (concat [7] core)]
+          fixed (concat [7] core)] 
       (is (not (checksum? bad)))
       (is (checksum? fixed))
       (let [recovered (recover-all-digits bad)]
