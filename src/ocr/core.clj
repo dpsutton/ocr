@@ -33,3 +33,11 @@
                         (format-account account)
                         (format-reason reason))))))
   ([filename] (parse-file filename p/parse-completely)))
+
+(defn raw-parse
+  []
+  (parse-file "resources/test.txt" p/parse))
+
+(defn corrected-parse
+  []
+  (parse-file "resources/test.txt" p/parse-completely))
