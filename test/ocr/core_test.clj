@@ -23,7 +23,8 @@
                        "  | _| _||_||_ |_   ||_||_|"
                        "  ||_  _|  | _||_|  ||_| _|")))))
   (testing "can skip gibberish"
-    (is (= '(1 2 :not-recognized 4)
+    (is (= '(1 2 {:status :not-recognized
+                  :original [" _ " "|||" "|||"]} 4)
            (parse '("    _  _    "
                     "  | _|||||_|"
                     "  ||_ |||  |"))))))
@@ -40,4 +41,33 @@
   (testing "recognizes correct sums"
     (is (-> 457508000 int->digits checksum?)))
   (testing "recognizes incorrect sums"
-    (is (not (-> 664371495 int->digits checksum?)))))
+    (is (not (-> 664371495 int->digits checksum?))))
+  (testing "says false if there are non-digits (ie, unrecognized)"
+    (is (not (checksum? [1 2 4 {:status :not-recognized}])))))
+
+(deftest metric-tests
+  (testing "metric recornizes the same"
+    (is (= 0 (metric "ab" "ab")))))
+
+(deftest close?-tests
+  (testing "recognizes close forms"
+    (is (close? (digit->str 9) (digit->str 8)))))
+
+(deftest recover-all-digits-tests
+  (testing "can correct tests"
+    (let [core [2 3 4 5 5 7 8 3]
+          bad (concat [1] core)
+          fixed (concat [7] core)]
+      (is (not (checksum? bad)))
+      (is (checksum? fixed))
+      (let [recovered (recover-all-digits bad)]
+        (is (= recovered fixed))))))
+
+(deftest recover-misread-tests
+  (let [misread {:status :not-recognized, :original ["   " " _|" " _|"]}]
+    (testing "can recover from single misread"
+      (let [misread [5 4 misread 6]]
+        (is (= [5 4 3 6] (recover-misread misread)))))
+    (testing "returns original when two misreads"
+      (let [original [5 4 misread misread 6]]
+        (is (= original (recover-misread original)))))))

@@ -5,7 +5,9 @@
 
 (defn format-account
   [digits]
-  (str/join "" (map #(if (#{:not-recognized} %) "?" (str %)) digits)))
+  (str/join "" (map
+                #(if (= (:status %) :not-recognized) "?" (str %))
+                digits)))
 
 (defn format-reason
   [reason]

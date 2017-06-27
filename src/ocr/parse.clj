@@ -40,7 +40,7 @@
 
 (defn valid-digits?
   [digits]
-  (not-any? #{:not-recognized} digits))
+  (not-any? (fn [elem] (= (:status elem) :not-recognized)) digits))
 
 (defn digits->int
   [digits]
@@ -62,7 +62,8 @@
   "Given a vector of top middle and bottom rows, return the digit
   associated with it or else :not-recognized"
   [s]
-  (get-in numerals [:str->num s] :not-recognized))
+  (get-in numerals [:str->num s] {:status :not-recognized
+                                  :original s}))
 
 (def blank ["" "" ""])
 
@@ -87,14 +88,15 @@
 
 (defn checksum?
   [digits]
-  (assert (valid-digits? digits) "Cannot checksum when there are invalid digits")
-  (as-> digits x
-    (reverse x)
-    (map vector x (rest (range)))
-    (map (fn [xs] (apply * xs)) x)
-    (apply + x)
-    (mod x 11)
-    (= x 0)))
+  (if (not (valid-digits? digits))
+    false
+    (as-> digits x
+      (reverse x)
+      (map vector x (rest (range)))
+      (map (fn [xs] (apply * xs)) x)
+      (apply + x)
+      (mod x 11)
+      (= x 0))))
 
 (defn analyze-parse
   "Given a sequence of digits and :not-recognized, analyzed whether it
