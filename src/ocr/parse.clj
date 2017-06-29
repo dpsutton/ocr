@@ -130,12 +130,10 @@
   [g1 g2]
   (let [s1 (apply str g1)
         s2 (apply str g2)]
-    (reduce (fn [_ [c1 c2]]
-              (if (not= c1 c2)
-                (reduced (= c1 \space))
-                false))
-            false
-            (map vector s1 s2))))
+    (->> (map vector s1 s2)
+         (remove (fn [[c1 c2]] (= c1 c2)))
+         (map (fn [[c1 c2]] (= c1 \space)))
+         (every? identity))))
 
 (defn close?
   "To be a replacement, it must be close and an allowable difference,
