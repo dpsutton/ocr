@@ -31,7 +31,7 @@
 
 (deftest composable-tests
   (testing "can read each others output"
-    (doall (for [x (range 34000 35000)]
+    (doall (for [x (range 34990 35000)]
              (is (= x (-> x
                           get-digit-rows
                           intparse
