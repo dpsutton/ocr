@@ -163,6 +163,12 @@
          (filter (partial close? original))
          (map str->digit)))
 
+  clojure.lang.PersistentVector
+  (close-possibilities [g]
+    (->> (vals (:num->str numerals))
+         (filter (partial close? g))
+         (map str->digit)))
+
   java.lang.Long
   (close-possibilities [d]
     (close-digits d)))
