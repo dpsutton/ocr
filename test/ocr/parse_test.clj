@@ -47,7 +47,17 @@
 
 (deftest metric-tests
   (testing "metric recornizes the same"
-    (is (= 0 (metric "ab" "ab")))))
+    (is (= 0 (metric "ab" "ab")))
+    (is (= 2 (metric "abcd" "adce")))))
+
+(deftest allowable-differences-tests
+  (testing "identifies deletions as allowable"
+    (is (allowable-difference? "a " "ab"))
+    (is (allowable-difference? "a b c" "axbxc")))
+  (testing "won't allow for differences where its not a space"
+    (is (not (allowable-difference? "ax" "ab")))
+    (is (not (allowable-difference? "-|" " |")))
+    (is (not (allowable-difference? "1 3 5 7 9" "123456788")))))
 
 (deftest close?-tests
   (testing "recognizes close forms"
@@ -61,23 +71,10 @@
                (close-possibilities 9)))))
 
 (deftest recover-all-digits-tests
-  (testing "can correct tests"
-    (let [core [2 3 4 5 5 7 8 3]
-          bad (concat [1] core)
-          fixed (concat [7] core)]
-      (is (not (checksum? bad)))
-      (is (checksum? fixed))
-      (let [recovered (recover-all-digits bad)]
-        (is (= recovered fixed))))))
+  )
 
 (deftest recover-misread-tests
-  (let [misread {:status :not-recognized, :original ["   " " _|" " _|"]}]
-    (testing "can recover from single misread"
-      (let [misread [5 4 misread 6]]
-        (is (= [5 4 3 6] (recover-misread misread)))))
-    (testing "returns original when two misreads"
-      (let [original [5 4 misread misread 6]]
-        (is (= original (recover-misread original)))))))
+  )
 
 (deftest recover-tests
   ;; 27 is correct, 21 will not checksum
@@ -89,4 +86,19 @@
                       " _|  |"
                       "|_   |"])]
     (is (= '(2 1) input))
-    (is (= '(2 7) (recover input)))))
+    (is (= '(2 7) (recover input))))
+  (testing "can correct tests"
+    (let [core [2 3 4 5 5 7 8 3]
+          bad (concat [1] core)
+          fixed (concat [7] core)]
+      (is (not (checksum? bad)))
+      (is (checksum? fixed))
+      (let [recovered (recover bad)]
+        (is (= recovered fixed))))
+    (let [misread {:status :not-recognized, :original ["   " " _|" " _|"]}]
+      (testing "can recover from single misread"
+        (let [misread [5 4 misread 6]]
+          (is (= [5 4 3 6] (recover misread)))))
+      (testing "returns original when two misreads"
+        (let [original [5 4 misread misread 6]]
+          (is (= original (recover  original))))))))
