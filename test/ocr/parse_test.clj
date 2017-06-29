@@ -53,11 +53,18 @@
   (testing "recognizes close forms"
     (is (close? (digit->str 9) (digit->str 8)))))
 
+(deftest close-possibilities-tests
+  (testing "recognizes digits close to a digit"
+    (is (some  #{8}
+               (close-possibilities (digit->str 9))))
+    (is (some #{8}
+               (close-possibilities 9)))))
+
 (deftest recover-all-digits-tests
   (testing "can correct tests"
     (let [core [2 3 4 5 5 7 8 3]
           bad (concat [1] core)
-          fixed (concat [7] core)] 
+          fixed (concat [7] core)]
       (is (not (checksum? bad)))
       (is (checksum? fixed))
       (let [recovered (recover-all-digits bad)]
@@ -71,3 +78,15 @@
     (testing "returns original when two misreads"
       (let [original [5 4 misread misread 6]]
         (is (= original (recover-misread original)))))))
+
+(deftest recover-tests
+  ;; 27 is correct, 21 will not checksum
+  (let [input (parse [" _  _ "
+                      " _|  |"
+                      "|_    "])]
+    (is (= '(2 7) (recover input))))
+  (let [input (parse [" _    "
+                      " _|  |"
+                      "|_   |"])]
+    (is (= '(2 1) input))
+    (is (= '(2 7) (recover input)))))

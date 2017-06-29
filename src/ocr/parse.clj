@@ -153,65 +153,37 @@
           {}
           (range 10)))
 
-(defn close-strings
-  "Given a glyph s, return the digits that are close to that glyph."
-  [s]
-  (->> (range 10)
-       (map digit->str)
-       (filter (partial close? s))
-       (map str->digit)))
+(defprotocol Closeness
+  (close-possibilities [g-or-d] "Return digits close to the glyph or digit"))
 
-(defn recover-misread
-  "Can replace one and only one map with the replacements."
-  [digits]
-  (if-let [possible (-> (filter map? digits)
-                        first
-                        :original
-                        close-strings)]
-    (let [replacements (reduce (fn [{:keys [previous remaining]} current]
-                                 (if (map? current)
-                                   (reduced (map #(apply conj previous % remaining) possible))
-                                   {:previous (conj previous current)
-                                    :remaining (rest remaining)}))
-                               {:previous []
-                                :remaining (rest digits)}
-                               digits)
-          viable (filter checksum? replacements)]
-      (if (not-empty viable)
-        (first viable)
-        digits))
-    digits))
+(extend-protocol Closeness
+  clojure.lang.PersistentArrayMap
+  (close-possibilities [{:keys [original]}]
+    (->> (vals (:num->str numerals))
+         (filter (partial close? original))
+         (map str->digit)))
 
-(defn recover-all-digits
-  "If there are no misread characters, then all digits are available
-  for checking."
-  [digits]
-  (let [fixed (reduce (fn [{:keys [checked remaining]} current]
-                        (let [possible (close-digits current)
-                              sequences (map #(apply conj checked % remaining) possible)
-                              solutions (filter checksum? sequences)]
-                          (if (not-empty solutions)
-                            (reduced (first solutions))
-                            {:checked (conj checked current)
-                             :remaining (rest remaining)})))
-                      {:checked []
-                       :remaining (rest digits)}
-                      digits)]
-    (if (:checked fixed)
-      digits
-      fixed)))
+  java.lang.Long
+  (close-possibilities [d]
+    (close-digits d)))
 
 (defn recover [digits]
-  (cond
+  (let [possible (reduce (fn [{:keys [previous remaining]} current]
+                           (let [others (close-possibilities current)
+                                 potential (map #(apply conj previous % remaining)
+                                                others)
+                                 fixes (filter checksum? potential)]
+                             (if (seq fixes)
+                               (reduced (first fixes))
+                               {:previous (conj previous current)
+                                :remaining (rest remaining)})))
+                         {:previous []
+                          :remaining (rest digits)}
+                         digits)]
+    (if (:remaining possible)
+      digits
+      possible)))
 
-    (checksum? digits) ; nothing to do
-    digits
-
-    (not (valid-digits? digits))
-    (recover-misread digits)
-
-    :else
-    (recover-all-digits digits)))
 
 (defn parse-completely
   "Parse and then try to recover from bad readings and bad checksums"
